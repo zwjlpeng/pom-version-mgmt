@@ -1,0 +1,32 @@
+<idea-plugin version="2">
+    <id>com.pengpeng04.open</id>
+    <name>Project Version Changer</name>
+    <version>1.0</version>
+    <vendor email="194312815@qq.com" url="http://www.aiprograming.com">pengpeng04</vendor>
+
+    <description><![CDATA[
+        Maven多模块工程版本快速修改工具
+    ]]></description>
+
+    <change-notes><![CDATA[
+        1.支持扫描父子pom,修改pom中的版本号
+    ]]>
+    </change-notes>
+
+    <idea-version since-build="107.105"/>
+
+    <extensions defaultExtensionNs="com.intellij">
+    </extensions>
+
+    <application-components>
+        <component>
+            <implementation-class>com.pengpeng04.open.VersionApplicationComponent</implementation-class>
+        </component>
+    </application-components>
+
+    <actions>
+        <action id="Project.Versions" class="com.pengpeng04.open.actions.VersionAction" text="Project Version Changer" description="make version modification easy!" icon="/icons/thumb_up.png">
+            <add-to-group group-id="ProjectViewPopupMenu"/>
+        </action>
+    </actions>
+</idea-plugin>
