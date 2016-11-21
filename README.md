@@ -25,7 +25,7 @@ the step 1:
 
 ![screenshot 1](https://github.com/zwjlpeng/versions/blob/master/images/screen_1.png?raw=true)
 
-the real image for preview
+the real image for previewmom
  
 ---
 
@@ -38,4 +38,4 @@ the real image for preview
 
 Contributor
 
-    pengpeng04@meituan.com
+    194312815@qq.com
