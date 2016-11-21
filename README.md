@@ -19,8 +19,20 @@ the fllowing are some screeshots for the above
 
 ---
 
+the step 1:
+
+---
+
 ![screenshot 1](https://github.com/zwjlpeng/versions/blob/master/images/screen_1.png?raw=true)
+
+the real image for preview
+ 
+---
+
 ![screenshot 2](https://github.com/zwjlpeng/versions/blob/master/images/screen_2.png?raw=true)
+
+---
+
 ![screenshot 3](https://github.com/zwjlpeng/versions/blob/master/images/screen_3.png?raw=true)
 
 
