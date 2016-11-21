@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
@@ -181,6 +182,33 @@ public class VersionAction extends AnAction {
                 ApplicationManager.getApplication().runWriteAction(updateDocRunner);
             }
         });
+    }
+
+    //控制菜单的可见性
+    @Override
+    public void update(AnActionEvent e) {
+        super.update(e);
+        Presentation presentation = e.getPresentation();
+        if (!presentation.isEnabled()) {
+            return;
+        }
+        Project project = e.getProject();
+        if (null == project) {
+            presentation.setVisible(false);
+            return;
+        }
+        String projectBasePath = project.getBasePath();
+        if (Strings.isNullOrEmpty(projectBasePath)) {
+            presentation.setVisible(false);
+            return;
+        }
+        String parentPomFilePath = projectBasePath + File.separator + Constants.POM_FILE_NAME;
+        if (!isExistFile(parentPomFilePath)) {
+            presentation.setVisible(false);
+            return;
+        } else {
+            presentation.setVisible(true);
+        }
     }
 
     @Override

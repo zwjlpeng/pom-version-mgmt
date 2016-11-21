@@ -3,6 +3,41 @@
   <component name="issues">
     <option name="index">
       <map>
+        <entry key="$USER_HOME$/new/kuailv_gateway/gateway_admin/pom.xml">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/new/kuailv_gateway/gateway_api/pom.xml">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/new/kuailv_gateway/gateway_rpc_client/pom.xml">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/new/kuailv_gateway/gateway_rpc_server/pom.xml">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/new/kuailv_gateway/gateway_service/pom.prod.xml">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/new/kuailv_gateway/gateway_service/pom.xml">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/new/kuailv_gateway/pom.xml">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$USER_HOME$/new/kuailv_mall/mall_web/src/main/java/com/sankuai/meituan/kuailv/mall/constants/BusinessRespCode.java">
           <value>
             <set />
