@@ -1,7 +1,6 @@
 package com.pengpeng04.open;
 
 import com.intellij.openapi.components.ApplicationComponent;
-import com.pengpeng04.open.Constants;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
 import org.jetbrains.annotations.NotNull;

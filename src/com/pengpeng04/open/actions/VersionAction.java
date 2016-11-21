@@ -154,6 +154,7 @@ public class VersionAction extends AnAction {
 
     //刷新当前的编辑文档
     private void refreshActiveEditor(Project project) {
+        project.getProjectFile().getFileSystem().refresh(true);
         final Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
         if (null == editor) {
             return;
