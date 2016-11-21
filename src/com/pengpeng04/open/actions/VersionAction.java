@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
@@ -13,6 +14,7 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.VirtualFileManager;
 import com.pengpeng04.open.Constants;
 import com.pengpeng04.open.VersionApplicationComponent;
 import com.yourkit.util.Strings;
@@ -154,7 +156,7 @@ public class VersionAction extends AnAction {
 
     //刷新当前的编辑文档
     private void refreshActiveEditor(Project project) {
-        project.getProjectFile().getFileSystem().refresh(true);
+        VirtualFileManager.getInstance().refreshWithoutFileWatcher(true);
         final Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
         if (null == editor) {
             return;
@@ -218,7 +220,11 @@ public class VersionAction extends AnAction {
         if (null == project) {
             return;
         }
-        String projectBasePath = project.getBasePath();
+        VirtualFile selectedVirtualFile = e.getData(PlatformDataKeys.VIRTUAL_FILE);
+        if (null == selectedVirtualFile) {
+            return;
+        }
+        String projectBasePath = selectedVirtualFile.getPath();
         if (Strings.isNullOrEmpty(projectBasePath)) {
             return;
         }
