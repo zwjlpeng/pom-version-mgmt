@@ -14,7 +14,8 @@ Project version changer for maven project, make the version change so easy!
 ---
 
     1.open the `IntelliJ IDEA` development env
-    2.click in order `IntelliJ IDEA` -> `Preferences` -> `Plugins` -> `Install plugins from disk` -> `select the version.jar`
+    2.click in order `IntelliJ IDEA` -> `Preferences` -> `Plugins` -> `Install plugins from disk`
+    -> `select the version.jar`
     3.restart the `IntelliJ IDEA`
     4.finish
 
