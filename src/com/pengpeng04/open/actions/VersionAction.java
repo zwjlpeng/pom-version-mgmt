@@ -305,7 +305,7 @@ public class VersionAction extends AnAction {
             return;
         }
         VirtualFile selectedVirtualFile = e.getData(PlatformDataKeys.VIRTUAL_FILE);
-        if (!selectedVirtualFile.isDirectory()) {
+        if (null == selectedVirtualFile || !selectedVirtualFile.isDirectory()) {
             presentation.setVisible(false);
             return;
         }
