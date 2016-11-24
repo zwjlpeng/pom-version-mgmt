@@ -2,6 +2,7 @@ package com.pengpeng04.open.actions;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -11,8 +12,12 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.module.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.util.io.FileSystemUtil;
+import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.pengpeng04.open.Constants;
@@ -23,8 +28,7 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 
 import java.io.*;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -78,7 +82,53 @@ public class VersionAction extends AnAction {
         return subModules;
     }
 
-    private void updateDependencyNodeVersion(String newVersion, Element dependenciesNode, Set<String> moduleSetHash) {
+    private Map<String,String> getPomPropertiesNodeMap(Document document) {
+        Map<String,String> result = Maps.newHashMap();
+        Element rootElement = document.getRootElement();
+        if (null == rootElement) {
+            return result;
+        }
+        List<Element> propertiesElementList = rootElement.getChildren(Constants.POM_NODE_PROPERTIES, rootElement.getNamespace());
+        if (null != propertiesElementList && !propertiesElementList.isEmpty()) {
+            Element propertiesNode = propertiesElementList.get(0);
+            List<Element> propertiesNodeChildren = propertiesNode.getChildren();
+            propertiesNodeChildren = (null == propertiesNodeChildren) ? Lists.newArrayList() : propertiesNodeChildren;
+            for (Element element : propertiesNodeChildren) {
+                result.put(element.getName().trim(), element.getTextTrim());
+            }
+        }
+        return result;
+    }
+
+    private void updatePomPropertiesNode(Document document, Map<String,String> pomPropertiesMap) {
+        Element rootElement = document.getRootElement();
+        if (null == rootElement) {
+            return;
+        }
+        List<Element> propertiesElementList = rootElement.getChildren(Constants.POM_NODE_PROPERTIES, rootElement.getNamespace());
+        if (null == propertiesElementList || propertiesElementList.isEmpty()
+                || null == pomPropertiesMap || pomPropertiesMap.isEmpty()) {
+            return;
+        }
+        Element propertiesNode = propertiesElementList.get(0);
+        List<Element> propertiesNodeChildren = propertiesNode.getChildren();
+        propertiesNodeChildren = (null == propertiesNodeChildren) ? Lists.newArrayList() : propertiesNodeChildren;
+        for (Element element : propertiesNodeChildren) {
+            if (pomPropertiesMap.containsKey(element.getName().trim())) {
+                element.setText(pomPropertiesMap.get(element.getName().trim()));
+            }
+        }
+    }
+
+    private String parseELExpressionVersion(String version) {
+        if (version.startsWith(Constants.POM_NODE_VERSION_EL_EXPRESSION_PREFIX)) {
+            return version.substring(Constants.POM_NODE_VERSION_EL_EXPRESSION_PREFIX.length(),version.length() - 1);
+        } else {
+            return "";
+        }
+    }
+
+    private void updateDependencyNodeVersion(String newVersion, Element dependenciesNode, Set<String> moduleSetHash, final Map<String,String> pomPropertiesNodeMap) {
         List<Element> elementList = dependenciesNode.getChildren(Constants.POM_NODE_DEPENDENCY, dependenciesNode.getNamespace());
         if (null == elementList || elementList.isEmpty()) {
             return;
@@ -95,6 +145,15 @@ public class VersionAction extends AnAction {
                     versoinList.forEach(new Consumer<Element>() {
                         @Override
                         public void accept(Element element) {
+                            String version = element.getValue();
+                            version = (null == version) ? "" : version.trim();
+                            if (version.startsWith(Constants.POM_NODE_VERSION_EL_EXPRESSION_PREFIX)) { //说明是EL表达式
+                                version = parseELExpressionVersion(version);
+                                if (pomPropertiesNodeMap.containsKey(version)) {
+                                    pomPropertiesNodeMap.put(version,newVersion);
+                                    return;
+                                }
+                            }
                             element.setText(newVersion);
                         }
                     });
@@ -103,7 +162,7 @@ public class VersionAction extends AnAction {
         }
     }
 
-    public void updatePomVersion(String newVersion, List<String> subModuleList, Document document) {
+    public void updatePomVersion(String newVersion, List<String> subModuleList, Document document, Map<String,String> parentPomPropertiesMap) {
         Element rootElement = document.getRootElement();
         if (null == rootElement) {
             return;
@@ -113,6 +172,10 @@ public class VersionAction extends AnAction {
         for (String module : subModuleList) {
             moduleSetHash.add(module);
         }
+        parentPomPropertiesMap = (null == parentPomPropertiesMap) ? Maps.newHashMap() : parentPomPropertiesMap;
+        Map<String,String> currentPomPropertiesMap = Maps.newHashMap();
+        currentPomPropertiesMap.putAll(parentPomPropertiesMap);
+        currentPomPropertiesMap.putAll(getPomPropertiesNodeMap(document));
         List<Element> versionElementList = rootElement.getChildren(Constants.POM_NODE_VERSION, rootElement.getNamespace());
         versionElementList = (null == versionElementList) ? Lists.newArrayList() : versionElementList;
         for (Element element : versionElementList) {
@@ -129,7 +192,7 @@ public class VersionAction extends AnAction {
         List<Element> dependenciesElementList = rootElement.getChildren(Constants.POM_NODE_DEPENDENCIES, rootElement.getNamespace());
         if (null != dependenciesElementList && !dependenciesElementList.isEmpty()) {
             Element dependenciesNode = dependenciesElementList.get(0);
-            updateDependencyNodeVersion(newVersion,dependenciesNode,moduleSetHash);
+            updateDependencyNodeVersion(newVersion,dependenciesNode,moduleSetHash, currentPomPropertiesMap);
         }
         List<Element> dependencyManagementList = rootElement.getChildren(Constants.POM_NODE_DEPENDENCY_MANAGEMENT, rootElement.getNamespace());
         if (null != dependencyManagementList && !dependencyManagementList.isEmpty()) {
@@ -137,7 +200,25 @@ public class VersionAction extends AnAction {
             dependenciesElementList = dependencyManagement.getChildren(Constants.POM_NODE_DEPENDENCIES, rootElement.getNamespace());
             if (null != dependenciesElementList && !dependenciesElementList.isEmpty()) {
                 Element dependenciesNode = dependenciesElementList.get(0);
-                updateDependencyNodeVersion(newVersion,dependenciesNode,moduleSetHash);
+                updateDependencyNodeVersion(newVersion,dependenciesNode,moduleSetHash, currentPomPropertiesMap);
+            }
+        }
+        //更新一下父pom节点的map
+        for (String key : parentPomPropertiesMap.keySet()) {
+            if (currentPomPropertiesMap.containsKey(key)) {
+                parentPomPropertiesMap.put(key, currentPomPropertiesMap.get(key));
+            }
+        }
+        //最后一步，让我们更新属性节点的版本号吧
+        List<Element> propertiesElementList = rootElement.getChildren(Constants.POM_NODE_PROPERTIES, rootElement.getNamespace());
+        if (null != propertiesElementList && !propertiesElementList.isEmpty()) {
+            Element propertiesNode = propertiesElementList.get(0);
+            List<Element> propertiesNodeChildren = propertiesNode.getChildren();
+            propertiesNodeChildren = (null == propertiesNodeChildren) ? Lists.newArrayList() : propertiesNodeChildren;
+            for (Element element : propertiesNodeChildren) {
+                if (currentPomPropertiesMap.containsKey(element.getName().trim())) {
+                    element.setText(currentPomPropertiesMap.get(element.getName().trim()));
+                }
             }
         }
     }
@@ -187,6 +268,24 @@ public class VersionAction extends AnAction {
         });
     }
 
+    private Module getParentModule(Module module) {
+        Module[] modules = ModuleManager.getInstance(module.getProject()).getModules();
+        Set<Module> moduleSet = Sets.newHashSet();
+        if (null != modules) {
+            for (Module pModule : modules) {
+                moduleSet.add(pModule);
+            }
+        }
+        VirtualFile moduleVirtualFile = module.getModuleFile();
+        Module parentModule = module;
+        while (moduleSet.contains(module)) {
+            moduleVirtualFile = moduleVirtualFile.getParent();
+            parentModule = module;
+            module = ModuleUtil.findModuleForFile(moduleVirtualFile, module.getProject());
+        }
+        return parentModule;
+    }
+
     //控制菜单的可见性
     @Override
     public void update(AnActionEvent e) {
@@ -204,6 +303,19 @@ public class VersionAction extends AnAction {
         if (Strings.isNullOrEmpty(projectBasePath)) {
             presentation.setVisible(false);
             return;
+        }
+        VirtualFile selectedVirtualFile = e.getData(PlatformDataKeys.VIRTUAL_FILE);
+        if (!selectedVirtualFile.isDirectory()) {
+            presentation.setVisible(false);
+            return;
+        }
+        Module module = ModuleUtil.findModuleForFile(selectedVirtualFile, project);
+        if (null != module) {
+            Module parentModule = getParentModule(module);
+            if (!parentModule.getModuleFile().getParent().getPath().equalsIgnoreCase(selectedVirtualFile.getPath())) {
+                presentation.setVisible(false);
+                return;
+            }
         }
         String parentPomFilePath = projectBasePath + File.separator + Constants.POM_FILE_NAME;
         if (!isExistFile(parentPomFilePath)) {
@@ -251,16 +363,19 @@ public class VersionAction extends AnAction {
         if (Strings.isNullOrEmpty(newVersion)) {
             return;
         }
+        Map<String,String> parentPomPropertiesMap = getPomPropertiesNodeMap(parentPomDocument);
         subModuleList = (null == subModuleList) ? Lists.newArrayList() : subModuleList;
-        updatePomVersion(newVersion, subModuleList, parentPomDocument);
+        updatePomVersion(newVersion, subModuleList, parentPomDocument, parentPomPropertiesMap);
         try {
-            writeNewPomFile(parentPomDocument, parentPomFilePath);
             for (String module : subModuleList) {
                 String modulePath = projectBasePath + File.separator + module + File.separator + Constants.POM_FILE_NAME;
                 Document moduleDocument = getPomDocument(modulePath);
-                updatePomVersion(newVersion, subModuleList, moduleDocument);
+                updatePomVersion(newVersion, subModuleList, moduleDocument,parentPomPropertiesMap);
                 writeNewPomFile(moduleDocument, modulePath);
             }
+            //执行上述逻辑之后parentPomDocument中属性可能已经发生了变化
+            updatePomPropertiesNode(parentPomDocument,parentPomPropertiesMap);
+            writeNewPomFile(parentPomDocument, parentPomFilePath);
         } catch (Exception ex) {
         }
         refreshActiveEditor(project);

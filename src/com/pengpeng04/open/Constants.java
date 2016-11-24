@@ -16,4 +16,6 @@ public final class Constants {
     public static final String POM_NODE_DEPENDENCY = "dependency";
     public static final String POM_NODE_DEPENDENCY_MANAGEMENT = "dependencyManagement";
     public static final String POM_NODE_PARENT = "parent";
+    public static final String POM_NODE_PROPERTIES = "properties";
+    public static final String POM_NODE_VERSION_EL_EXPRESSION_PREFIX = "${";
 }

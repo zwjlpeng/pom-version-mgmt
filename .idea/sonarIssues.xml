@@ -3,6 +3,21 @@
   <component name="issues">
     <option name="index">
       <map>
+        <entry key="$USER_HOME$/new/kuailv_dsync/dsync_server/pom.xml">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/new/kuailv_dsync/dsync_server/src/main/java/com/sankuai/meituan/kuailv/dsync/service/GlobalService.java">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/new/kuailv_dsync/pom.xml">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$USER_HOME$/new/kuailv_gateway/gateway_admin/pom.xml">
           <value>
             <set />
