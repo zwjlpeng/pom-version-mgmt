@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.cip.crane:crane-remote:1.0.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/cip/crane/crane-remote/1.0.0-SNAPSHOT/crane-remote-1.0.0-20161115.035612-29.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/cip/crane/crane-remote/1.0.0-SNAPSHOT/crane-remote-1.0.0-20161115.035612-29-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/cip/crane/crane-remote/1.0.0-SNAPSHOT/crane-remote-1.0.0-20161115.035612-29-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

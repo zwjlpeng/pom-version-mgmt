@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.meituan.log:scribe-log4j2:1.2.6-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/meituan/log/scribe-log4j2/1.2.6-SNAPSHOT/scribe-log4j2-1.2.6-20160928.091054-1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/meituan/log/scribe-log4j2/1.2.6-SNAPSHOT/scribe-log4j2-1.2.6-20160928.091054-1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/meituan/log/scribe-log4j2/1.2.6-SNAPSHOT/scribe-log4j2-1.2.6-20160928.091054-1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

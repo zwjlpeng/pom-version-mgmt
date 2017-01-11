@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.sankuai.meituan.kuailv:kuailv_util:1.0.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/sankuai/meituan/kuailv/kuailv_util/1.0.0-SNAPSHOT/kuailv_util-1.0.0-20161102.091636-30.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/sankuai/meituan/kuailv/kuailv_util/1.0.0-SNAPSHOT/kuailv_util-1.0.0-20161102.091636-30-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/sankuai/meituan/kuailv/kuailv_util/1.0.0-SNAPSHOT/kuailv_util-1.0.0-20161102.091636-30-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

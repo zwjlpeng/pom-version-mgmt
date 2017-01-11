@@ -17,6 +17,20 @@
       <profile default="true" name="Default" enabled="false">
         <processorPath useClasspath="true" />
       </profile>
+      <profile default="false" name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="true" />
+      </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="pas" target="1.6" />
+      <module name="pas-common-utils" target="1.7" />
+      <module name="pas-promotion-strategy" target="1.7" />
+      <module name="pas-service" target="1.7" />
+      <module name="pas-thrift-client" target="1.5" />
+      <module name="pas-thrift-server" target="1.7" />
+    </bytecodeTargetLevel>
   </component>
 </project>

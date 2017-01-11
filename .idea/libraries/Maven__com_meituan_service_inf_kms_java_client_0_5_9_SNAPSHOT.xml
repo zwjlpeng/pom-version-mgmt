@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.meituan.service.inf:kms-java-client:0.5.9-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/meituan/service/inf/kms-java-client/0.5.9-SNAPSHOT/kms-java-client-0.5.9-20160428.041729-4.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/meituan/service/inf/kms-java-client/0.5.9-SNAPSHOT/kms-java-client-0.5.9-20160428.041729-4-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/meituan/service/inf/kms-java-client/0.5.9-SNAPSHOT/kms-java-client-0.5.9-20160428.041729-4-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -12,12 +12,11 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.FileEditorManager;
-import com.intellij.openapi.module.*;
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleManager;
+import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.util.io.FileSystemUtil;
-import com.intellij.openapi.util.io.FileUtil;
-import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.pengpeng04.open.Constants;
@@ -27,15 +26,13 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 
+import javax.swing.*;
 import java.io.*;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 
-/**
- * author : pengpeng
- * date : 16/11/16
- * email : 194312815@qq.com
- **/
 public class VersionAction extends AnAction {
 
     private boolean isExistFile(String path) {
@@ -46,13 +43,16 @@ public class VersionAction extends AnAction {
         return file.exists();
     }
 
-    private Document getPomDocument(String pomFilePath) throws IOException, JDOMException {
-        InputStream file = new FileInputStream(pomFilePath);
-        Document document = VersionApplicationComponent.saxBuilder.build(file);
-        return document;
+    private Document getPomDocument(String pomFilePath) {
+        try (InputStream file = new FileInputStream(pomFilePath)) {
+            Document document = VersionApplicationComponent.saxBuilder.build(file);
+            return document;
+        } catch (Exception ex) {
+            return null;
+        }
     }
 
-    private String getParentPomVersion(Document document) throws IOException, JDOMException {
+    private String getParentPomVersion(Document document) {
         Element rootElement = document.getRootElement();
         if (null == rootElement) {
             return null;
@@ -65,7 +65,7 @@ public class VersionAction extends AnAction {
         }
     }
 
-    private List<String> getSubModuleList(Document document) throws IOException, JDOMException {
+    private List<String> getSubModuleList(Document document) {
         Element rootElement = document.getRootElement();
         if (null == rootElement) {
             return null;
@@ -133,7 +133,6 @@ public class VersionAction extends AnAction {
         if (null == elementList || elementList.isEmpty()) {
             return;
         }
-        //循环遍历更新子模块对应的版本号
         for (Element element : elementList) {
             List<Element> artifactIdList = element.getChildren(Constants.POM_NODE_ARTIFACTID, dependenciesNode.getNamespace());
             artifactIdList = (null == artifactIdList) ? Lists.newArrayList() : artifactIdList;
@@ -203,13 +202,11 @@ public class VersionAction extends AnAction {
                 updateDependencyNodeVersion(newVersion,dependenciesNode,moduleSetHash, currentPomPropertiesMap);
             }
         }
-        //更新一下父pom节点的map
         for (String key : parentPomPropertiesMap.keySet()) {
             if (currentPomPropertiesMap.containsKey(key)) {
                 parentPomPropertiesMap.put(key, currentPomPropertiesMap.get(key));
             }
         }
-        //最后一步，让我们更新属性节点的版本号吧
         List<Element> propertiesElementList = rootElement.getChildren(Constants.POM_NODE_PROPERTIES, rootElement.getNamespace());
         if (null != propertiesElementList && !propertiesElementList.isEmpty()) {
             Element propertiesNode = propertiesElementList.get(0);
@@ -223,19 +220,19 @@ public class VersionAction extends AnAction {
         }
     }
 
-    public void writeNewPomFile(Document document, String path) throws IOException {
+    public void writeNewPomFile(Document document, String path) {
         if (Strings.isNullOrEmpty(path)) {
             return;
         }
         if (isExistFile(path)) {
             new File(path).delete();
         }
-        OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(path), Charsets.UTF_8.name());
-        VersionApplicationComponent.xmlOutputter.output(document,osw);
-        osw.close();
+        try (OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(path), Charsets.UTF_8.name())) {
+            VersionApplicationComponent.xmlOutputter.output(document, osw);
+        } catch (Exception ex) {
+        }
     }
 
-    //刷新当前的编辑文档
     private void refreshActiveEditor(Project project) {
         VirtualFileManager.getInstance().refreshWithoutFileWatcher(true);
         final Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
@@ -286,7 +283,6 @@ public class VersionAction extends AnAction {
         return parentModule;
     }
 
-    //控制菜单的可见性
     @Override
     public void update(AnActionEvent e) {
         super.update(e);
@@ -345,19 +341,15 @@ public class VersionAction extends AnAction {
             return;
         }
         String parentPomVersion = "";
-        Document parentPomDocument = null;
-        List<String> subModuleList = null;
-        try {
-            parentPomDocument = getPomDocument(parentPomFilePath);
-            parentPomVersion = getParentPomVersion(parentPomDocument);
-            subModuleList = getSubModuleList(parentPomDocument);
-        } catch (Exception ex) {
-        }
-        if (Strings.isNullOrEmpty(parentPomVersion)) {
+        Document parentPomDocument;
+        List<String> subModuleList;
+        parentPomDocument = getPomDocument(parentPomFilePath);
+        parentPomVersion = getParentPomVersion(parentPomDocument);
+        subModuleList = getSubModuleList(parentPomDocument);
+        if (Strings.isNullOrEmpty(parentPomVersion) || null == parentPomDocument) {
             return;
         }
-        //谈出修改版本号的对话框
-        String newVersion = Messages.showInputDialog("new version:", "current version(" + parentPomVersion + ")", Messages.getQuestionIcon());
+        String newVersion = Messages.showInputDialog("新版本:", "当前版本(" + parentPomVersion + ")", null);
         newVersion = null == newVersion ? "" : newVersion;
         newVersion = newVersion.trim();
         if (Strings.isNullOrEmpty(newVersion)) {
@@ -366,18 +358,14 @@ public class VersionAction extends AnAction {
         Map<String,String> parentPomPropertiesMap = getPomPropertiesNodeMap(parentPomDocument);
         subModuleList = (null == subModuleList) ? Lists.newArrayList() : subModuleList;
         updatePomVersion(newVersion, subModuleList, parentPomDocument, parentPomPropertiesMap);
-        try {
-            for (String module : subModuleList) {
-                String modulePath = projectBasePath + File.separator + module + File.separator + Constants.POM_FILE_NAME;
-                Document moduleDocument = getPomDocument(modulePath);
-                updatePomVersion(newVersion, subModuleList, moduleDocument,parentPomPropertiesMap);
-                writeNewPomFile(moduleDocument, modulePath);
-            }
-            //执行上述逻辑之后parentPomDocument中属性可能已经发生了变化
-            updatePomPropertiesNode(parentPomDocument,parentPomPropertiesMap);
-            writeNewPomFile(parentPomDocument, parentPomFilePath);
-        } catch (Exception ex) {
+        for (String module : subModuleList) {
+            String modulePath = projectBasePath + File.separator + module + File.separator + Constants.POM_FILE_NAME;
+            Document moduleDocument = getPomDocument(modulePath);
+            updatePomVersion(newVersion, subModuleList, moduleDocument,parentPomPropertiesMap);
+            writeNewPomFile(moduleDocument, modulePath);
         }
+        updatePomPropertiesNode(parentPomDocument,parentPomPropertiesMap);
+        writeNewPomFile(parentPomDocument, parentPomFilePath);
         refreshActiveEditor(project);
     }
 }

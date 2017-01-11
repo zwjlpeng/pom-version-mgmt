@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.meituan.service.mobile:mtthrift:1.6.4-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/meituan/service/mobile/mtthrift/1.6.4-SNAPSHOT/mtthrift-1.6.4-20160531.074825-6.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/meituan/service/mobile/mtthrift/1.6.4-SNAPSHOT/mtthrift-1.6.4-20160531.074825-6-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/meituan/service/mobile/mtthrift/1.6.4-SNAPSHOT/mtthrift-1.6.4-20160531.074825-6-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

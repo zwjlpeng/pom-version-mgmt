@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.meituan.mtrace:mtrace:1.1.1-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/meituan/mtrace/mtrace/1.1.1-SNAPSHOT/mtrace-1.1.1-20160531.094655-19.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/meituan/mtrace/mtrace/1.1.1-SNAPSHOT/mtrace-1.1.1-20160531.094655-19-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/meituan/mtrace/mtrace/1.1.1-SNAPSHOT/mtrace-1.1.1-20160531.094655-19-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

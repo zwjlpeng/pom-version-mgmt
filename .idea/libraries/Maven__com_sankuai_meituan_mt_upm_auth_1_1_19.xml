@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.sankuai.meituan:mt-upm-auth:1.1.19">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/sankuai/meituan/mt-upm-auth/1.1.19/mt-upm-auth-1.1.19.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/sankuai/meituan/mt-upm-auth/1.1.19/mt-upm-auth-1.1.19-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/sankuai/meituan/mt-upm-auth/1.1.19/mt-upm-auth-1.1.19-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
