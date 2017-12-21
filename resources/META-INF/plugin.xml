@@ -1,7 +1,7 @@
 <idea-plugin version="2">
     <id>com.pengpeng04.open</id>
     <name>Project Version Changer</name>
-    <version>1.0</version>
+    <version>1.1</version>
     <vendor email="194312815@qq.com" url="http://www.aiprograming.com">pengpeng04</vendor>
 
     <description><![CDATA[
@@ -9,6 +9,10 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        1.1 2017-12-21
+        - fix 如果根目录下的pom.xml中有<parent>节点也会被更新为新设置的版本号问题
+
+
         1.支持扫描父子pom,修改pom中的版本号
     ]]>
     </change-notes>
