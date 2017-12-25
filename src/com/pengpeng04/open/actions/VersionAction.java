@@ -24,9 +24,7 @@ import com.pengpeng04.open.VersionApplicationComponent;
 import com.yourkit.util.Strings;
 import org.jdom.Document;
 import org.jdom.Element;
-import org.jdom.JDOMException;
 
-import javax.swing.*;
 import java.io.*;
 import java.util.List;
 import java.util.Map;
@@ -82,8 +80,8 @@ public class VersionAction extends AnAction {
         return subModules;
     }
 
-    private Map<String,String> getPomPropertiesNodeMap(Document document) {
-        Map<String,String> result = Maps.newHashMap();
+    private Map<String, String> getPomPropertiesNodeMap(Document document) {
+        Map<String, String> result = Maps.newHashMap();
         Element rootElement = document.getRootElement();
         if (null == rootElement) {
             return result;
@@ -100,7 +98,7 @@ public class VersionAction extends AnAction {
         return result;
     }
 
-    private void updatePomPropertiesNode(Document document, Map<String,String> pomPropertiesMap) {
+    private void updatePomPropertiesNode(Document document, Map<String, String> pomPropertiesMap) {
         Element rootElement = document.getRootElement();
         if (null == rootElement) {
             return;
@@ -122,13 +120,13 @@ public class VersionAction extends AnAction {
 
     private String parseELExpressionVersion(String version) {
         if (version.startsWith(Constants.POM_NODE_VERSION_EL_EXPRESSION_PREFIX)) {
-            return version.substring(Constants.POM_NODE_VERSION_EL_EXPRESSION_PREFIX.length(),version.length() - 1);
+            return version.substring(Constants.POM_NODE_VERSION_EL_EXPRESSION_PREFIX.length(), version.length() - 1);
         } else {
             return "";
         }
     }
 
-    private void updateDependencyNodeVersion(String newVersion, Element dependenciesNode, Set<String> moduleSetHash, final Map<String,String> pomPropertiesNodeMap) {
+    private void updateDependencyNodeVersion(String newVersion, Element dependenciesNode, Set<String> moduleSetHash, final Map<String, String> pomPropertiesNodeMap) {
         List<Element> elementList = dependenciesNode.getChildren(Constants.POM_NODE_DEPENDENCY, dependenciesNode.getNamespace());
         if (null == elementList || elementList.isEmpty()) {
             return;
@@ -149,7 +147,7 @@ public class VersionAction extends AnAction {
                             if (version.startsWith(Constants.POM_NODE_VERSION_EL_EXPRESSION_PREFIX)) { //说明是EL表达式
                                 version = parseELExpressionVersion(version);
                                 if (pomPropertiesNodeMap.containsKey(version)) {
-                                    pomPropertiesNodeMap.put(version,newVersion);
+                                    pomPropertiesNodeMap.put(version, newVersion);
                                     return;
                                 }
                             }
@@ -161,7 +159,22 @@ public class VersionAction extends AnAction {
         }
     }
 
-    public void updatePomVersion(String newVersion, List<String> subModuleList, Document document, Map<String,String> parentPomPropertiesMap) {
+
+    public void updateRootPomVersion(String newVersion, Document document) {
+        Element rootElement = document.getRootElement();
+        if (null == rootElement) {
+            return;
+        }
+
+        List<Element> versionElementList = rootElement.getChildren(Constants.POM_NODE_VERSION, rootElement.getNamespace());
+        versionElementList = (null == versionElementList) ? Lists.newArrayList() : versionElementList;
+        for (Element element : versionElementList) {
+            element.setText(newVersion);
+        }
+    }
+
+
+    public void updatePomVersion(String newVersion, List<String> subModuleList, Document document, Map<String, String> parentPomPropertiesMap) {
         Element rootElement = document.getRootElement();
         if (null == rootElement) {
             return;
@@ -172,7 +185,7 @@ public class VersionAction extends AnAction {
             moduleSetHash.add(module);
         }
         parentPomPropertiesMap = (null == parentPomPropertiesMap) ? Maps.newHashMap() : parentPomPropertiesMap;
-        Map<String,String> currentPomPropertiesMap = Maps.newHashMap();
+        Map<String, String> currentPomPropertiesMap = Maps.newHashMap();
         currentPomPropertiesMap.putAll(parentPomPropertiesMap);
         currentPomPropertiesMap.putAll(getPomPropertiesNodeMap(document));
         List<Element> versionElementList = rootElement.getChildren(Constants.POM_NODE_VERSION, rootElement.getNamespace());
@@ -191,7 +204,7 @@ public class VersionAction extends AnAction {
         List<Element> dependenciesElementList = rootElement.getChildren(Constants.POM_NODE_DEPENDENCIES, rootElement.getNamespace());
         if (null != dependenciesElementList && !dependenciesElementList.isEmpty()) {
             Element dependenciesNode = dependenciesElementList.get(0);
-            updateDependencyNodeVersion(newVersion,dependenciesNode,moduleSetHash, currentPomPropertiesMap);
+            updateDependencyNodeVersion(newVersion, dependenciesNode, moduleSetHash, currentPomPropertiesMap);
         }
         List<Element> dependencyManagementList = rootElement.getChildren(Constants.POM_NODE_DEPENDENCY_MANAGEMENT, rootElement.getNamespace());
         if (null != dependencyManagementList && !dependencyManagementList.isEmpty()) {
@@ -199,7 +212,7 @@ public class VersionAction extends AnAction {
             dependenciesElementList = dependencyManagement.getChildren(Constants.POM_NODE_DEPENDENCIES, rootElement.getNamespace());
             if (null != dependenciesElementList && !dependenciesElementList.isEmpty()) {
                 Element dependenciesNode = dependenciesElementList.get(0);
-                updateDependencyNodeVersion(newVersion,dependenciesNode,moduleSetHash, currentPomPropertiesMap);
+                updateDependencyNodeVersion(newVersion, dependenciesNode, moduleSetHash, currentPomPropertiesMap);
             }
         }
         for (String key : parentPomPropertiesMap.keySet()) {
@@ -355,16 +368,16 @@ public class VersionAction extends AnAction {
         if (Strings.isNullOrEmpty(newVersion)) {
             return;
         }
-        Map<String,String> parentPomPropertiesMap = getPomPropertiesNodeMap(parentPomDocument);
+        Map<String, String> parentPomPropertiesMap = getPomPropertiesNodeMap(parentPomDocument);
         subModuleList = (null == subModuleList) ? Lists.newArrayList() : subModuleList;
-        updatePomVersion(newVersion, subModuleList, parentPomDocument, parentPomPropertiesMap);
+        updateRootPomVersion(newVersion, parentPomDocument);
         for (String module : subModuleList) {
             String modulePath = projectBasePath + File.separator + module + File.separator + Constants.POM_FILE_NAME;
             Document moduleDocument = getPomDocument(modulePath);
-            updatePomVersion(newVersion, subModuleList, moduleDocument,parentPomPropertiesMap);
+            updatePomVersion(newVersion, subModuleList, moduleDocument, parentPomPropertiesMap);
             writeNewPomFile(moduleDocument, modulePath);
         }
-        updatePomPropertiesNode(parentPomDocument,parentPomPropertiesMap);
+        updatePomPropertiesNode(parentPomDocument, parentPomPropertiesMap);
         writeNewPomFile(parentPomDocument, parentPomFilePath);
         refreshActiveEditor(project);
     }
