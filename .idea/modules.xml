@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/versions.iml" filepath="$PROJECT_DIR$/versions.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pom-version-mgmt.iml" filepath="$PROJECT_DIR$/pom-version-mgmt.iml" />
     </modules>
   </component>
 </project>
